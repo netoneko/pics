@@ -6,9 +6,9 @@ require 'coderay'
 
 lines = File.readlines(__FILE__)
 tokens = CodeRay.scan lines.join, :ruby
-puts tokens.inspect
-puts tokens.statistic
+
 puts lines.count
+puts tokens.statistic
 
 fill = {
   content: "darkgrey",
@@ -21,10 +21,14 @@ fill = {
   constant: 'pink'
 }
 
-rvg = Magick::RVG.new(1000, lines.size * 25) do |canvas|
-  canvas.background_fill = 'white'
+FontSize = 20
+DoubleFontSize = FontSize * 2
+DefaultColor = 'white'
+
+rvg = Magick::RVG.new(lines.max_by(&:size).size * FontSize * 0.75, lines.size * DoubleFontSize) do |canvas|
+  canvas.background_fill = 'black'
   canvas.desc = "Example tspan02 - using tspan's dx and dy attributes for incremental positioning adjustments"
-  canvas.g.styles(:font_family=>'Lucida Console', :font_size=> 15) do |_g|
+  canvas.g.styles(font_family: 'Monaco', font_size: FontSize, font_weight: 'bold', fill: DefaultColor) do |_g|
     top_index = 0
 
     tokens.each do |token|
@@ -32,9 +36,9 @@ rvg = Magick::RVG.new(1000, lines.size * 25) do |canvas|
         @value = token
       elsif @value
         if (token == :space && @value == "\n") || !defined?(@text)
-          @text = _g.text(10, (top_index += 1) * 25, @value.to_s).styles(:fill => fill[token] || 'black')
+          @text = _g.text(10, (top_index += 1) * DoubleFontSize, @value.to_s).styles(:fill => fill[token] || DefaultColor)
         else
-          @text.tspan(@value.to_s).d(0, 0).styles(:fill => fill[token] || 'black')
+          @text.tspan(@value.to_s).d(5, 0).styles(:fill => fill[token] || DefaultColor)
         end
 
         @value = nil
@@ -43,4 +47,4 @@ rvg = Magick::RVG.new(1000, lines.size * 25) do |canvas|
   end
 end
 
-rvg.draw.write('pic.png')
+rvg.draw.spread(0.05).write('pic.png')
