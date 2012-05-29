@@ -1,0 +1,12 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    coderay (1.0.6)
+    rmagick (2.13.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  coderay
+  rmagick
